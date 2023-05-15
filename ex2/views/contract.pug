@@ -1,0 +1,10 @@
+extends layout
+
+block content
+  h1= Title
+  p Contrato : #{contract._id}
+
+    each field in contract
+        tr
+          td #{field}
+          

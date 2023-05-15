@@ -1,0 +1,20 @@
+block content
+  h1= title
+  p nome: #{contracts[0].NomeInstituicao} nipc #{contracts[0].NIPCInstituicao}
+  ul
+    table
+      tr
+        th ID
+        th Data Início Contrato
+        th Data Fim Contrato
+        th Nome Instituição
+        th Áreas Investigação
+      each contract in contracts
+        tr
+          td 
+            a(href=`http://localhost:15016/${contract._id}`) #{contract._id}
+          td #{contract.DataInicioContrato}
+          td #{contract.DataFimContrato}
+          td 
+            a(href=`http://localhost:15016/inst/${contract.NIPCInstituicao}`) #{contract.NomeInstituicao}
+          td #{contract.AreasInvestigacao}

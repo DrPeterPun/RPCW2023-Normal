@@ -1,0 +1,28 @@
+A persistencia de dados foi feita simplesmente importando o ficheiro tal como dado para o mongo db como um json
+
+    Quantos contratos estão na base de dados;
+db.contracts.count()
+nr de contratos: 17943
+
+    Quantos contratos foram realizados pela Universidade do Minho?
+sciencejobs> db.contracts.countDocuments({"NomeInstituicao":"Universidade do Minho"})
+166
+
+    Qual a lista das áreas das pessoas contratadas (ordenada alfabeticamente e sem repetições)? (AreaCNAEF)
+db.contracts.aggregate([
+  { $group: { _id: "$AreasInvestigacao" } },
+  { $sort: { _id: 1 } }
+])
+    Qual a distribuição por ano dos contratos? (quantos contratos em cada ano)
+db.contracts.aggregate([
+  { $group: { _id: "$DataInicioContrato", count: { $sum: 1 } } }
+])   
+    Qual a distribuição dos contratos por instituição?
+db.contracts.aggregate([
+  { $group: { _id: "$NomeInstituicao", anos: { $addToSet: { $year: "$DataInicioContrato" } } } },
+  { $unwind: "$anos" },
+  { $sortByCount: "$anos" },
+  { $group: { _id: "$_id", anos: { $push: { ano: "$_id", count: "$count" } } } },
+  { $project: { NomeInstituicao: "$_id", DataInicioContrato: 1, _id: 0 } }
+])
+

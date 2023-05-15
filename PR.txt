@@ -1,0 +1,53 @@
+EX1
+
+A persistencia de dados foi feita simplesmente importando o ficheiro tal como dado para o mongo db como um json
+Houve um pequeno erro e a base de danos chama-se "sciencejobs" e nao "scienceJobs"
+
+    Quantos contratos estão na base de dados;
+db.contracts.count()
+nr de contratos: 17943
+
+    Quantos contratos foram realizados pela Universidade do Minho?
+sciencejobs> db.contracts.countDocuments({"NomeInstituicao":"Universidade do Minho"})
+166
+
+    Qual a lista das áreas das pessoas contratadas (ordenada alfabeticamente e sem repetições)? (AreaCNAEF)
+db.contracts.aggregate([
+  { $group: { _id: "$AreasInvestigacao" } },
+  { $sort: { _id: 1 } }
+])
+    Qual a distribuição por ano dos contratos? (quantos contratos em cada ano)
+db.contracts.aggregate([
+  {
+    $project: {
+      year: { $year: "$DataInicioContrato" }
+    }
+  },
+  {
+    $group: {
+      _id: "$year",
+      count: { $sum: 1 }
+    }
+  },
+  {
+    $sort: {
+      _id: 1
+    }
+  }
+])
+
+    Qual a distribuição dos contratos por instituição?
+db.contracts.aggregate([
+  { $group: { _id: "$NomeInstituicao", anos: { $addToSet: { $year: "$DataInicioContrato" } } } },
+  { $unwind: "$anos" },
+  { $sortByCount: "$anos" },
+  { $group: { _id: "$_id", anos: { $push: { ano: "$_id", count: "$count" } } } },
+  { $project: { NomeInstituicao: "$_id", DataInicioContrato: 1, _id: 0 } }
+])
+
+para o resto do exercicio, foram criadas requestes no controller para todas as funcionalidades pretendidas e depois estas foram chamadas quando apropriadas,
+
+EX2
+foram criadas 3 views, a principal a das instituicoes e dos contratos
+foi criado um template para dar um header comum a todas as paginas com um link para voltar a pagina inicial
+
