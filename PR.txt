@@ -37,12 +37,13 @@ db.contracts.aggregate([
 ])
 
     Qual a distribuição dos contratos por instituição?
-db.contracts.aggregate([
-  { $group: { _id: "$NomeInstituicao", anos: { $addToSet: { $year: "$DataInicioContrato" } } } },
-  { $unwind: "$anos" },
-  { $sortByCount: "$anos" },
-  { $group: { _id: "$_id", anos: { $push: { ano: "$_id", count: "$count" } } } },
-  { $project: { NomeInstituicao: "$_id", DataInicioContrato: 1, _id: 0 } }
+db.collection.aggregate([
+  {
+    $group: {
+      _id: "$NIPCInstituicao",
+      count: { $sum: 1 }
+    }
+  }
 ])
 
 para o resto do exercicio, foram criadas requestes no controller para todas as funcionalidades pretendidas e depois estas foram chamadas quando apropriadas,
